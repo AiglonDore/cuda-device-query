@@ -14,6 +14,7 @@
 #include <cstring>
 #include <cmath>
 #include <fstream>
+#include <thread>
 
 #include "../header/device_query.cuh"
 #include "../header/exn.h"
@@ -24,22 +25,23 @@ int main(int argc, char *argv[])
     std::ofstream *file = nullptr;
     for (size_t i = 1; i < argc; i++)
     {
-        if (strcmp(argv[i], "--file") == 0 || strcmp(argv[i], "-f"))
+        if (strcmp(argv[i], "--file") == 0 || strcmp(argv[i], "-f") == 0)
         {
             if (i + 1 < argc)
             {
                 file = new std::ofstream(argv[i + 1]);
                 if (!file->is_open())
                 {
-                    std::cerr << "Error while opening file: " << argv[i + 1] << std::endl;
+                    std::cerr << "Error while opening file: " << argv[i + 1] << "." << std::endl;
                     std::cerr << "Ignoring it." << std::endl;
                     delete file;
                     file = nullptr;
                 }
                 else
                 {
-                    std::cout << "Output will be written in file: " << argv[i + 1] << std::endl;
+                    std::cout << "Output will be written in file: " << argv[i + 1] << "." << std::endl;
                 }
+                i++;
             }
             else
             {
@@ -54,8 +56,6 @@ int main(int argc, char *argv[])
         }
     }
     
-
-    // Get the number of CUDA devices
     try
     {
         int deviceCount = 0;
@@ -66,16 +66,26 @@ int main(int argc, char *argv[])
         }
         if (deviceCount == 0)
         {
-            std::cout << "There is no device supporting CUDA." << std::endl;
+            std::cerr << "There is no device supporting CUDA." << std::endl;
+            if (file != nullptr)
+            {
+                file->close();
+                delete file;
+                file = nullptr;
+            }
             return 0;
         }
 
         std::cout << "Number of CUDA devices: " << deviceCount << std::endl;
+        if (file != nullptr)
+        {
+            *file << "Number of CUDA devices: " << deviceCount << std::endl;
+        }
 
-        for (size_t i = 0; i < deviceCount; i++)
+        if (deviceCount == 1)
         {
             std::string result;
-            deviceQuery(i, result);
+            deviceQuery(0, result);
             if (file != nullptr)
             {
                 *file << result << std::endl;
@@ -84,6 +94,44 @@ int main(int argc, char *argv[])
             {
                 std::cout << result << std::endl;
             }
+        }
+        else
+        {
+            std::cout << "Querying devices using up to " << std::thread::hardware_concurrency() << " threads." << std::endl;
+            int nbThreads = std::min(deviceCount, (int)std::thread::hardware_concurrency());
+            std::thread *threads = new std::thread[nbThreads];
+            std::string *results = new std::string[deviceCount];
+
+            for (int i = 0; i < nbThreads; i++)
+            {
+                threads[i] = std::thread([&nbThreads, &deviceCount, results](int index) {
+                    for (size_t i = index; i < deviceCount; i+=nbThreads)
+                    {
+                        deviceQuery(i, results[i]);
+                    }
+                }, i);
+            }
+
+            for (int i = 0; i < nbThreads; i++)
+            {
+                threads[i].join();
+            }
+            if (file != nullptr)
+            {
+                for (int i = 0; i < deviceCount; i++)
+                {
+                    *file << results[i] << std::endl;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < deviceCount; i++)
+                {
+                    std::cout << results[i] << std::endl;
+                }
+            }
+            delete[] threads;
+            delete[] results;
         }
     }
     catch (const Cuda_exception &e)

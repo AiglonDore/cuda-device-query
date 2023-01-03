@@ -13,7 +13,7 @@ ifeq ($(OS), Windows_NT)
 	SEP=\\
 else
 	ifeq ($(RELEASE),TRUE)
-		CFLAGS=-Xcompiler -Wall -Xcompiler -Wextra -O3 -std=c++17
+		CFLAGS=-Xcompiler -s -Xcompiler -Wall -Xcompiler -Wextra -O3 -std=c++17
 	else
 		CFLAGS=-Xcompiler -Wall -Xcompiler -Wextra -g -std=c++17
 	endif
