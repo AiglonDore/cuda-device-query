@@ -4,17 +4,21 @@ LCC=nvcc
 # Compiler flags
 ifeq ($(OS), Windows_NT)
 	ifeq ($(RELEASE),TRUE)
-		CFLAGS= -s -O3 -std=c++17
+		CFLAGS= -O3 -std=c++17
 	else
 		CFLAGS=-g -std=c++17
 	endif
 	LCC=wsl nvcc
+	DEL=del
+	SEP=\\
 else
 	ifeq ($(RELEASE),TRUE)
-		CFLAGS=-Xcompiler -Wall -Xcompiler -Wextra -s -O3 -std=c++17
+		CFLAGS=-Xcompiler -Wall -Xcompiler -Wextra -O3 -std=c++17
 	else
 		CFLAGS=-Xcompiler -Wall -Xcompiler -Wextra -g -std=c++17
 	endif
+	DEL=rm
+	SEP=/
 endif
 
 all : windows linux
@@ -43,3 +47,12 @@ obj/device_query.o : src/device_query.cu header/device_query.cuh header/exn.h
 
 obj/exn.o : src/exn.cpp header/exn.h
 	$(LCC) $(CFLAGS) -c -o $@ $<
+
+clean :
+	$(DEL) obj$(SEP)*.obj
+	$(DEL) obj$(SEP)*.o
+	$(DEL) bin$(SEP)*.exe
+	$(DEL) bin$(SEP)*.out
+	$(DEL) bin$(SEP)*.pdb
+	$(DEL) bin$(SEP)*.exp
+	$(DEL) bin$(SEP)*.lib
