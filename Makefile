@@ -21,6 +21,7 @@ all : windows linux
 
 windows : obj/main.obj obj/device_query.obj obj/exn.obj
 	$(WCC) $(CFLAGS) -o bin/device_query.exe $^
+	del *.pdb
 
 linux : obj/main.o obj/device_query.o obj/exn.o
 	$(LCC) $(CFLAGS) -o bin/device_query.out $^

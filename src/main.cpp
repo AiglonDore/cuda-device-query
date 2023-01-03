@@ -96,9 +96,12 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
     }
 
-    file->close();
-    delete file;
-    file = nullptr;
+    if (file != nullptr)
+    {
+        file->close();
+        delete file;
+        file = nullptr;
+    }
 
     return 0;
 }
