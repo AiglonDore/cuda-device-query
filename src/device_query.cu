@@ -37,7 +37,6 @@ void deviceQuery(int device, std::string& output)
                                                                 << deviceProp.maxGridSize[2] << std::endl;
     oss << "  Maximum memory pitch:                          " << deviceProp.memPitch << " bytes" << std::endl;
     oss << "  Texture alignment:                             " << deviceProp.textureAlignment << " bytes" << std::endl;
-    oss << "  Clock rate:                                    " << deviceProp.clockRate << " kilohertz" << std::endl;
-
+    oss << "  Clock rate:                                    " << deviceProp.clockRate << " kilohertz";
     output = oss.str();
 }
