@@ -19,6 +19,13 @@
 #include "../header/device_query.cuh"
 #include "../header/exn.h"
 
+/**
+ * @brief Main function.
+ * 
+ * @param argc Number of arguments.
+ * @param argv List of arguments.
+ * @return int Error code.
+ */
 int main(int argc, char *argv[])
 {
     std::cout << "\t\t-----CUDA device query-----" << std::endl;
@@ -55,7 +62,7 @@ int main(int argc, char *argv[])
             std::cerr << "Ignoring it." << std::endl;
         }
     }
-    
+
     try
     {
         int deviceCount = 0;
@@ -76,16 +83,19 @@ int main(int argc, char *argv[])
             return 0;
         }
 
-        std::cout << "Number of CUDA devices: " << deviceCount << std::endl;
         if (file != nullptr)
         {
             *file << "Number of CUDA devices: " << deviceCount << std::endl;
         }
-
-        if (deviceCount == 1)
+        else
         {
-            std::string result;
-            deviceQuery(0, result);
+            std::cout << "Number of CUDA devices: " << deviceCount << std::endl;
+        }
+
+        std::string result;
+        for (size_t i = 0; i < deviceCount; i++)
+        {
+            deviceQuery(i, result);
             if (file != nullptr)
             {
                 *file << result << std::endl;
@@ -95,53 +105,30 @@ int main(int argc, char *argv[])
                 std::cout << result << std::endl;
             }
         }
-        else
-        {
-            std::cout << "Querying devices using up to " << std::thread::hardware_concurrency() << " threads." << std::endl;
-            int nbThreads = std::min(deviceCount, (int)std::thread::hardware_concurrency());
-            std::thread *threads = new std::thread[nbThreads];
-            std::string *results = new std::string[deviceCount];
-
-            for (int i = 0; i < nbThreads; i++)
-            {
-                threads[i] = std::thread([&nbThreads, &deviceCount, results](int index) {
-                    for (size_t i = index; i < deviceCount; i+=nbThreads)
-                    {
-                        deviceQuery(i, results[i]);
-                    }
-                }, i);
-            }
-
-            for (int i = 0; i < nbThreads; i++)
-            {
-                threads[i].join();
-            }
-            if (file != nullptr)
-            {
-                for (int i = 0; i < deviceCount; i++)
-                {
-                    *file << results[i] << std::endl;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < deviceCount; i++)
-                {
-                    std::cout << results[i] << std::endl;
-                }
-            }
-            delete[] threads;
-            delete[] results;
-        }
+        
     }
     catch (const Cuda_exception &e)
     {
         std::cerr << "Error with CUDA" << std::endl;
         std::cerr << e.what() << std::endl;
+        if (file != nullptr)
+        {
+            file->close();
+            delete file;
+            file = nullptr;
+        }
+        return e.get_error_id();
     }
     catch (const std::exception &e)
     {
         std::cerr << e.what() << std::endl;
+        if (file != nullptr)
+        {
+            file->close();
+            delete file;
+            file = nullptr;
+        }
+        return -1;
     }
 
     if (file != nullptr)
@@ -150,8 +137,5 @@ int main(int argc, char *argv[])
         delete file;
         file = nullptr;
     }
-    #ifdef _WIN32
-    system("PAUSE");
-    #endif
     return 0;
 }
