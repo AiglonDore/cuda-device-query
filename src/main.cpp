@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <cstring>
 
 #include "../header/query.h"
 #include "../header/exn.h"
