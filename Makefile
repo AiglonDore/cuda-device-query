@@ -23,11 +23,10 @@ endif
 
 all : windows linux
 
-windows : obj/main.obj obj/device_query.obj obj/exn.obj
+windows : obj/main.obj obj/device_query.obj obj/exn.obj obj/query.obj
 	$(WCC) $(CFLAGS) -o bin/device_query.exe $^
-	del *.pdb
 
-linux : obj/main.o obj/device_query.o obj/exn.o
+linux : obj/main.o obj/device_query.o obj/exn.o obj/query.o
 	$(LCC) $(CFLAGS) -o bin/device_query.out $^
 
 obj/main.obj : src/main.cpp header/device_query.cuh header/exn.h
@@ -39,6 +38,9 @@ obj/device_query.obj : src/device_query.cu header/device_query.cuh header/exn.h
 obj/exn.obj : src/exn.cpp header/exn.h
 	$(WCC) $(CFLAGS) -c -o $@ $<
 
+obj/query.obj : src/query.cpp header/query.h header/device_query.cuh header/exn.h
+	$(WCC) $(CFLAGS) -c -o $@ $<
+
 obj/main.o : src/main.cpp header/device_query.cuh header/exn.h
 	$(LCC) $(CFLAGS) -c -o $@ $<
 
@@ -46,6 +48,9 @@ obj/device_query.o : src/device_query.cu header/device_query.cuh header/exn.h
 	$(LCC) $(CFLAGS) -c -o $@ $<
 
 obj/exn.o : src/exn.cpp header/exn.h
+	$(LCC) $(CFLAGS) -c -o $@ $<
+
+obj/query.o : src/query.cpp header/query.h header/device_query.cuh header/exn.h
 	$(LCC) $(CFLAGS) -c -o $@ $<
 
 clean :
@@ -56,3 +61,4 @@ clean :
 	$(DEL) bin$(SEP)*.pdb
 	$(DEL) bin$(SEP)*.exp
 	$(DEL) bin$(SEP)*.lib
+	$(DEL) *.pdb
