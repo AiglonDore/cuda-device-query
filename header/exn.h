@@ -39,6 +39,13 @@ public:
      * @return const char* Error message
      */
     virtual const char* what() const noexcept override;
+
+    /**
+     * @brief Get the error ID
+     * 
+     * @return cudaError_t Error ID
+     */
+    cudaError_t get_error_id() const noexcept { return error_id; };
 };
 
 #endif // EXN_H
