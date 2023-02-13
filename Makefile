@@ -8,9 +8,9 @@ ifeq ($(OS), Windows_NT)
 	else
 		CFLAGS=-g -std=c++17
 	endif
-	LCC=wsl nvcc
 	DEL=del
 	SEP=\\
+all : windows
 else
 	ifeq ($(RELEASE),TRUE)
 		CFLAGS=-Xcompiler -s -Xcompiler -Wall -Xcompiler -Wextra -O3 -std=c++17
@@ -19,9 +19,8 @@ else
 	endif
 	DEL=rm
 	SEP=/
+all : linux
 endif
-
-all : windows linux
 
 windows : obj/main.obj obj/device_query.obj obj/exn.obj obj/query.obj
 	$(WCC) $(CFLAGS) -o bin/device_query.exe $^
