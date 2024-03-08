@@ -22,9 +22,9 @@ void deviceQuery(int device, std::string& output)
     oss << "Device " << device << ": " << deviceProp.name << std::endl;
     oss << "  Major revision number:                         " << deviceProp.major << std::endl;
     oss << "  Minor revision number:                         " << deviceProp.minor << std::endl;
-    oss << "  Total amount of global memory:                 " << deviceProp.totalGlobalMem << " bytes" << std::endl;
+    oss << "  Total amount of global memory:                 " << deviceProp.totalGlobalMem << " bytes(" << deviceProp.totalGlobalMem / 1024 / 1024 / 1024 << " GB)" << std::endl;
     oss << "  Number of multiprocessors:                     " << deviceProp.multiProcessorCount << std::endl;
-    oss << "  Total amount of constant memory:               " << deviceProp.totalConstMem << " bytes" << std::endl;
+    oss << "  Total amount of constant memory:               " << deviceProp.totalConstMem << " bytes (" << deviceProp.totalConstMem / 1024 / 1024 / 1024 << " GB)" << std::endl;
     oss << "  Total amount of shared memory per block:       " << deviceProp.sharedMemPerBlock << " bytes" << std::endl;
     oss << "  Total number of registers available per block: " << deviceProp.regsPerBlock << std::endl;
     oss << "  Warp size:                                     " << deviceProp.warpSize << std::endl;
