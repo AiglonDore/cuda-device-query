@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Update package list
+      run: sudo apt update
     - name: Install nvcc
       run: sudo apt install nvidia-cuda-toolkit -y
     - name: Make
