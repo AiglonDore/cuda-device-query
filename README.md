@@ -25,7 +25,7 @@ This project is a simple CUDA program designed to query and display detailed inf
    ```
 2. Compile the program using the provided Makefile:
    ```bash
-   make
+   make RELEASE=TRUE
    ```
 
 ## Usage
