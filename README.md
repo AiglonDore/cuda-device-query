@@ -1,7 +1,3 @@
-Here’s a potential README for your CUDA device query project:
-
----
-
 # CUDA Device Query
 
 This project is a simple CUDA program designed to query and display detailed information about the CUDA-compatible devices available on your system.
@@ -42,7 +38,3 @@ Run the compiled binary:
 ## License
 
 This project is licensed under the GPL-3.0 License. See the [LICENSE.md](./LICENSE.md) file for more details.
-
---- 
-
-You can adjust this based on any specific preferences or additional details you'd like to highlight!
