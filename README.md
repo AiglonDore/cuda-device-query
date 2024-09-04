@@ -30,9 +30,14 @@ This project is a simple CUDA program designed to query and display detailed inf
 
 ## Usage
 
-Run the compiled binary:
+Run the compiled binary on Linux:
 ```bash
-./bin/cudaDeviceQuery
+./bin/device_query.out
+```
+
+Run the compiled binary on Windows:
+```bash
+./bin/device_query.exe
 ```
 
 ## License
